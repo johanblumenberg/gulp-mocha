@@ -62,13 +62,16 @@ module.exports = opts => {
 			stdio: opts.supress ? 'ignore' : 'inherit'
 		});
 
-		function wait() {
-			proc.on('exit', (code, signal) => {
-				process.kill(process.pid, signal);
-			})
+		function wait(signal) {
+			return () => {
+				proc.kill(signal);
+				proc.on('exit', () => {
+					process.kill(process.pid, signal);
+				})
+			};
 		}
-		process.once('SIGINT', wait);
-		process.once('SIGTERM', wait);
+		process.once('SIGINT', wait('SIGINT'));
+		process.once('SIGTERM', wait('SIGTERM'));
 
 		proc
 			.then(result => {
