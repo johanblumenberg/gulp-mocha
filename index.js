@@ -72,6 +72,8 @@ module.exports = opts => {
 		}
 		process.once('SIGINT', wait('SIGINT'));
 		process.once('SIGTERM', wait('SIGTERM'));
+		process.on('SIGINT', () => {});
+		process.on('SIGTERM', () => {});
 
 		proc
 			.then(result => {
