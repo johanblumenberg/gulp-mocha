@@ -57,7 +57,15 @@ module.exports = opts => {
 		const env = npmRunPath.env({cwd: __dirname});
 		const proc = execa('mocha', files.concat(args), {
 			env,
-			maxBuffer: HUNDRED_MEGABYTES
+			maxBuffer: HUNDRED_MEGABYTES,
+			cleanup: false,
+			stdio: opts.supress ? 'ignore' : 'inherit'
+		});
+
+		process.once('SIGINT', () => {
+			proc.on('exit', () => {
+				process.kill(process.pid, 'SIGINT');
+			});
 		});
 
 		proc
@@ -69,11 +77,6 @@ module.exports = opts => {
 				this.emit('error', new PluginError('gulp-mocha', err.code > 0 ? 'There were test failures' : err));
 				done();
 			});
-
-		if (!opts.suppress) {
-			proc.stdout.pipe(process.stdout);
-			proc.stderr.pipe(process.stderr);
-		}
 	}
 
 	return through.obj(aggregate, flush);

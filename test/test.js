@@ -18,7 +18,7 @@ test('run unit test and pass', async t => {
 	const stream = mocha({suppress: true});
 	const result = pEvent(stream, '_result');
 	stream.end(fixture('fixture-pass.js'));
-	t.regex((await result).stdout, /1 passing/);
+	t.is((await result).code, 0);
 });
 
 test('run unit test and fail', async t => {
@@ -46,5 +46,5 @@ test('require two files', async t => {
 	});
 	const result = pEvent(stream, '_result');
 	stream.end(fixture('fixture-pass.js'));
-	t.regex((await result).stdout, /1 passing/);
+	t.is((await result).code, 0);
 });
